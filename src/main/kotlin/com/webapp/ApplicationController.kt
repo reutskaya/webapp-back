@@ -14,15 +14,16 @@ class ApplicationController(@Autowired val index: IndexDAO,
     @PostMapping("/find")
     fun searchByToken(@RequestBody request: SearchRequest): Response {
         logger.info("Request to /find path recieved")
+        logger.info("Tokens: " + request.tokens.toString())
         val indexWords = request.tokens.fold(emptyList<Set<Int>>(), { a, b ->
-            a + listOf(index.findById(b).map { it.texts }.orElse(emptyList()).toSet())
+            a + listOf(index.findById(b.toLowerCase()).map { it.texts }.orElse(emptyList()).toSet())
         })
         val resultSet = mutableSetOf<Int>()
         resultSet.addAll(indexWords.first())
         indexWords.map {
             resultSet.retainAll(it)
         }
-        logger.info("Search tokens: " + resultSet.toString())
+        logger.info("Find texts: " + resultSet.toString())
         val result = text.findAllById(resultSet).map { Text(it.id, it.text.substring(0, 255) + " ...") }
         logger.info("Successful search")
         return Response(result)
