@@ -23,7 +23,7 @@ class ApplicationController(@Autowired val index: IndexDAO,
         indexWords.map {
             resultSet.retainAll(it)
         }
-        logger.info("Find texts: " + resultSet.toString())
+        logger.info("Found texts: " + resultSet.toString())
         val result = text.findAllById(resultSet).map { Text(it.id, it.text.substring(0, 255) + " ...") }
         logger.info("Successful search")
         return Response(result)
@@ -35,7 +35,7 @@ class ApplicationController(@Autowired val index: IndexDAO,
         val findById = text.findById(id)
         if (!findById.isPresent()) {
             logger.info("No element with id: " + id)
-            throw NoSuchElementException("This text is not presented!")
+            throw NoSuchElementException("There is no such text!")
         } else {
             logger.info("Successful get")
             return Response(listOf(findById.get()))
